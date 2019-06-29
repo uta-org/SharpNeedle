@@ -22,7 +22,7 @@ namespace SharpNeedle
             foreach (Process proc in procs)
             {
                 ListViewItem li = new ListViewItem();
-                li.Text = string.Format("{0} - {1}", proc.ProcessName, proc.Id);
+                li.Text = $@"{proc.ProcessName} - {proc.Id}";
                 li.Tag = proc;
                 listProcesses.Items.Add(li);
             }
@@ -30,17 +30,22 @@ namespace SharpNeedle
             listProcesses.Sorting = SortOrder.Ascending;
             listProcesses.Sort();
 
-            int? pid = Extensions.FindProcessId();
-            if (!pid.HasValue)
-                throw new Exception("The Spotify process couldn't be found!");
+            {
+                int? pid = Extensions.FindProcessId();
+                if (!pid.HasValue)
+                    throw new Exception("The Spotify process couldn't be found!");
 
-            int? processIndex = listProcesses.Items.Cast<ListViewItem>()
-                .FirstOrDefault(item => (item.Tag as Process)?.Id == pid.Value)?.Index;
+                var proc = listProcesses.Items.Cast<ListViewItem>()
+                    .FirstOrDefault(item => (item.Tag as Process)?.Id == pid.Value);
+                int? processIndex = proc?.Index;
 
-            if (!processIndex.HasValue)
-                throw new Exception($"Couldn't find any process in the list with PID: '{pid.Value}'!");
+                if (!processIndex.HasValue)
+                    throw new Exception($"Couldn't find any process in the list with PID: '{pid.Value}'!");
 
-            listProcesses.Items[processIndex.Value].Selected = true;
+                listProcesses.Items[processIndex.Value].Selected = true;
+
+                Text += $@" [Selected PID {pid.Value} | {(proc.Tag as Process)?.MainWindowTitle}]";
+            }
         }
 
         private void btnLoadProcesses_Click(object sender, EventArgs e)
@@ -65,7 +70,7 @@ namespace SharpNeedle
 
             try
             {
-                lblModuleBase.Text = selectedProcess.MainModule.BaseAddress.ToString("X");
+                lblModuleBase.Text = selectedProcess.MainModule?.BaseAddress.ToString("X");
             }
             catch
             {
