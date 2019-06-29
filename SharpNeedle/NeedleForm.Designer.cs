@@ -154,7 +154,7 @@
             this.lblThreads.AutoSize = true;
             this.lblThreads.Location = new System.Drawing.Point(312, 32);
             this.lblThreads.Name = "lblThreads";
-            this.lblThreads.Size = new System.Drawing.Size(35, 20);
+            this.lblThreads.Size = new System.Drawing.Size(27, 13);
             this.lblThreads.TabIndex = 7;
             this.lblThreads.Text = "N/A";
             // 
@@ -163,7 +163,7 @@
             this.label7.AutoSize = true;
             this.label7.Location = new System.Drawing.Point(200, 32);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(102, 20);
+            this.label7.Size = new System.Drawing.Size(71, 13);
             this.label7.TabIndex = 6;
             this.label7.Text = "# of Threads:";
             // 
@@ -172,7 +172,7 @@
             this.lblModuleBase.AutoSize = true;
             this.lblModuleBase.Location = new System.Drawing.Point(312, 9);
             this.lblModuleBase.Name = "lblModuleBase";
-            this.lblModuleBase.Size = new System.Drawing.Size(35, 20);
+            this.lblModuleBase.Size = new System.Drawing.Size(27, 13);
             this.lblModuleBase.TabIndex = 5;
             this.lblModuleBase.Text = "N/A";
             // 
@@ -181,7 +181,7 @@
             this.label6.AutoSize = true;
             this.label6.Location = new System.Drawing.Point(200, 9);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(106, 20);
+            this.label6.Size = new System.Drawing.Size(72, 13);
             this.label6.TabIndex = 4;
             this.label6.Text = "Module Base:";
             // 
@@ -271,7 +271,7 @@
             this.textboxPayload.Name = "textboxPayload";
             this.textboxPayload.Size = new System.Drawing.Size(319, 26);
             this.textboxPayload.TabIndex = 5;
-            this.textboxPayload.Text = "SharpPayload.dll";
+            this.textboxPayload.Text = "compiled\\SpotifySharper.Lib.dll";
             // 
             // label4
             // 
@@ -311,7 +311,6 @@
             this.textboxArgs.Name = "textboxArgs";
             this.textboxArgs.Size = new System.Drawing.Size(319, 26);
             this.textboxArgs.TabIndex = 4;
-            this.textboxArgs.Text = "-SharpArgument -ArgumentTwo";
             // 
             // NeedleForm
             // 

@@ -1,14 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Diagnostics;
-using System.Drawing;
-using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using SpotifySharper.Lib;
 
 namespace SharpNeedle
 {
@@ -19,8 +13,7 @@ namespace SharpNeedle
             InitializeComponent();
         }
 
-
-        private void LoadProcesList()
+        private void LoadProcessList()
         {
             listProcesses.Items.Clear();
 
@@ -36,16 +29,28 @@ namespace SharpNeedle
 
             listProcesses.Sorting = SortOrder.Ascending;
             listProcesses.Sort();
+
+            int? pid = Extensions.FindProcessId();
+            if (!pid.HasValue)
+                throw new Exception("The Spotify process couldn't be found!");
+
+            int? processIndex = listProcesses.Items.Cast<ListViewItem>()
+                .FirstOrDefault(item => (item.Tag as Process)?.Id == pid.Value)?.Index;
+
+            if (!processIndex.HasValue)
+                throw new Exception($"Couldn't find any process in the list with PID: '{pid.Value}'!");
+
+            listProcesses.Items[processIndex.Value].Selected = true;
         }
 
         private void btnLoadProcesses_Click(object sender, EventArgs e)
         {
-            LoadProcesList();
+            LoadProcessList();
         }
 
         private void NeedleForm_Load(object sender, EventArgs e)
         {
-            LoadProcesList();
+            LoadProcessList();
         }
 
         private void listProcesses_SelectedIndexChanged(object sender, EventArgs e)
@@ -56,7 +61,7 @@ namespace SharpNeedle
             ResetProcessInfo();
             ListViewItem selectedItem = listProcesses.SelectedItems[0];
 
-            Process selectedProcess = (Process) selectedItem.Tag;
+            Process selectedProcess = (Process)selectedItem.Tag;
 
             try
             {
@@ -91,7 +96,7 @@ namespace SharpNeedle
                 return;
             }
 
-            Process targetProcess = (Process) listProcesses.SelectedItems[0].Tag;
+            Process targetProcess = (Process)listProcesses.SelectedItems[0].Tag;
 
             string domainFilePath = Application.StartupPath;//Set the directory containing the dll
             string payloadFilePath = Application.StartupPath;

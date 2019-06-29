@@ -5,3 +5,11 @@ F:\git\SharpNeedle\MemorySharp\bin\Debug\MemorySharp.pdb
 F:\git\SharpNeedle\MemorySharp\bin\Debug\Fasm.NET.dll
 F:\git\SharpNeedle\MemorySharp\obj\Debug\MemorySharp.dll
 F:\git\SharpNeedle\MemorySharp\obj\Debug\MemorySharp.pdb
+E:\VISUAL STUDIO\Visual Studio Projects\SharpNeedle\MemorySharp\bin\Debug\MemorySharp.XML
+E:\VISUAL STUDIO\Visual Studio Projects\SharpNeedle\MemorySharp\bin\Debug\MemorySharp.dll
+E:\VISUAL STUDIO\Visual Studio Projects\SharpNeedle\MemorySharp\bin\Debug\MemorySharp.pdb
+E:\VISUAL STUDIO\Visual Studio Projects\SharpNeedle\MemorySharp\obj\Debug\MemorySharp.csprojAssemblyReference.cache
+E:\VISUAL STUDIO\Visual Studio Projects\SharpNeedle\MemorySharp\obj\Debug\MemorySharp.csproj.CoreCompileInputs.cache
+E:\VISUAL STUDIO\Visual Studio Projects\SharpNeedle\MemorySharp\obj\Debug\MemorySharp.csproj.CopyComplete
+E:\VISUAL STUDIO\Visual Studio Projects\SharpNeedle\MemorySharp\obj\Debug\MemorySharp.dll
+E:\VISUAL STUDIO\Visual Studio Projects\SharpNeedle\MemorySharp\obj\Debug\MemorySharp.pdb
