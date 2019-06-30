@@ -271,7 +271,7 @@
             this.textboxPayload.Name = "textboxPayload";
             this.textboxPayload.Size = new System.Drawing.Size(319, 26);
             this.textboxPayload.TabIndex = 5;
-            this.textboxPayload.Text = "compiled\\SpotifySharper.Lib.dll";
+            this.textboxPayload.Text = "compiled\\SpotifySharper.Injector.dll";
             // 
             // label4
             // 

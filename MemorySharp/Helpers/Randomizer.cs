@@ -13,54 +13,14 @@ using System.Text;
 namespace Binarysharp.MemoryManagement.Helpers
 {
     /// <summary>
-    /// Static helper class providing tools for generating random numbers or strings.
+    ///     Static helper class providing tools for generating random numbers or strings.
     /// </summary>
     public static class Randomizer
     {
-        #region Fields
-        /// <summary>
-        /// Provides random engine.
-        /// </summary>
-        private static readonly Random Random = new Random();
-        /// <summary>
-        /// Allowed characters in random strings.
-        /// </summary>
-        private static readonly char[] AllowedChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789".ToCharArray();
-        #endregion
-
-        #region GenerateNumber
-        /// <summary>
-        /// Returns a random number within a specified range.
-        /// </summary>
-        /// <param name="minValue">The inclusive lower bound of the random number returned.</param>
-        /// <param name="maxValue">The exclusive upper bound of the random number returned. maxValue must be greater than or equal to minValue.</param>
-        /// <returns>A 32-bit signed integer greater than or equal to minValue and less than maxValue.</returns>
-        public static int GenerateNumber(int minValue, int maxValue)
-        {
-            return Random.Next(minValue, maxValue);
-        }
-        /// <summary>
-        /// Returns a nonnegative random number less than the specified maximum.
-        /// </summary>
-        /// <param name="maxValue">The exclusive upper bound of the random number to be generated. maxValue must be greater than or equal to zero.</param>
-        /// <returns>A 32-bit signed integer greater than or equal to zero, and less than maxValue.</returns>
-        public static int GenerateNumber(int maxValue)
-        {
-            return Random.Next(maxValue);
-        }
-        /// <summary>
-        /// Returns a nonnegative random number.
-        /// </summary>
-        /// <returns>A 32-bit signed integer greater than or equal to zero and less than <see cref="int.MaxValue"/>.</returns>
-        public static int GenerateNumber()
-        {
-            return Random.Next();
-        }
-        #endregion
-
         #region GenerateString
+
         /// <summary>
-        /// Returns a random string where its size is within a specified range.
+        ///     Returns a random string where its size is within a specified range.
         /// </summary>
         /// <param name="minSize">The inclusive lower bound of the size of the string returned.</param>
         /// <param name="maxSize">The exclusive upper bound of the size of the string returned.</param>
@@ -72,23 +32,79 @@ namespace Binarysharp.MemoryManagement.Helpers
 
             // Fill the string builder
             for (var i = 0; i < builder.Capacity; i++)
-            {
                 builder.Append(AllowedChars[GenerateNumber(AllowedChars.Length - 1)]);
-            }
 
             return builder.ToString();
         }
+
         #endregion
 
         #region GenerateGuid
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="Guid"/> structure.
+        ///     Initializes a new instance of the <see cref="Guid" /> structure.
         /// </summary>
-        /// <returns>A new <see cref="Guid"/> object.</returns>
+        /// <returns>A new <see cref="Guid" /> object.</returns>
         public static Guid GenerateGuid()
         {
             return Guid.NewGuid();
         }
+
+        #endregion
+
+        #region Fields
+
+        /// <summary>
+        ///     Provides random engine.
+        /// </summary>
+        private static readonly Random Random = new Random();
+
+        /// <summary>
+        ///     Allowed characters in random strings.
+        /// </summary>
+        private static readonly char[] AllowedChars =
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789".ToCharArray();
+
+        #endregion
+
+        #region GenerateNumber
+
+        /// <summary>
+        ///     Returns a random number within a specified range.
+        /// </summary>
+        /// <param name="minValue">The inclusive lower bound of the random number returned.</param>
+        /// <param name="maxValue">
+        ///     The exclusive upper bound of the random number returned. maxValue must be greater than or equal
+        ///     to minValue.
+        /// </param>
+        /// <returns>A 32-bit signed integer greater than or equal to minValue and less than maxValue.</returns>
+        public static int GenerateNumber(int minValue, int maxValue)
+        {
+            return Random.Next(minValue, maxValue);
+        }
+
+        /// <summary>
+        ///     Returns a nonnegative random number less than the specified maximum.
+        /// </summary>
+        /// <param name="maxValue">
+        ///     The exclusive upper bound of the random number to be generated. maxValue must be greater than or
+        ///     equal to zero.
+        /// </param>
+        /// <returns>A 32-bit signed integer greater than or equal to zero, and less than maxValue.</returns>
+        public static int GenerateNumber(int maxValue)
+        {
+            return Random.Next(maxValue);
+        }
+
+        /// <summary>
+        ///     Returns a nonnegative random number.
+        /// </summary>
+        /// <returns>A 32-bit signed integer greater than or equal to zero and less than <see cref="int.MaxValue" />.</returns>
+        public static int GenerateNumber()
+        {
+            return Random.Next();
+        }
+
         #endregion
     }
 }

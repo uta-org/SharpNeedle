@@ -17,11 +17,11 @@ namespace SharpNeedle
         {
             listProcesses.Items.Clear();
 
-            Process[] procs = Process.GetProcesses();
+            var procs = Process.GetProcesses();
 
-            foreach (Process proc in procs)
+            foreach (var proc in procs)
             {
-                ListViewItem li = new ListViewItem();
+                var li = new ListViewItem();
                 li.Text = $@"{proc.ProcessName} - {proc.Id}";
                 li.Tag = proc;
                 listProcesses.Items.Add(li);
@@ -31,13 +31,13 @@ namespace SharpNeedle
             listProcesses.Sort();
 
             {
-                int? pid = Extensions.FindProcessId();
+                var pid = Extensions.FindProcessId();
                 if (!pid.HasValue)
                     throw new Exception("The Spotify process couldn't be found!");
 
                 var proc = listProcesses.Items.Cast<ListViewItem>()
                     .FirstOrDefault(item => (item.Tag as Process)?.Id == pid.Value);
-                int? processIndex = proc?.Index;
+                var processIndex = proc?.Index;
 
                 if (!processIndex.HasValue)
                     throw new Exception($"Couldn't find any process in the list with PID: '{pid.Value}'!");
@@ -64,9 +64,9 @@ namespace SharpNeedle
                 return;
 
             ResetProcessInfo();
-            ListViewItem selectedItem = listProcesses.SelectedItems[0];
+            var selectedItem = listProcesses.SelectedItems[0];
 
-            Process selectedProcess = (Process)selectedItem.Tag;
+            var selectedProcess = (Process) selectedItem.Tag;
 
             try
             {
@@ -97,16 +97,18 @@ namespace SharpNeedle
         {
             if (listProcesses.SelectedItems.Count != 1)
             {
-                MessageBox.Show("You must select one process target", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("You must select one process target", "Error", MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
                 return;
             }
 
-            Process targetProcess = (Process)listProcesses.SelectedItems[0].Tag;
+            var targetProcess = (Process) listProcesses.SelectedItems[0].Tag;
 
-            string domainFilePath = Application.StartupPath;//Set the directory containing the dll
-            string payloadFilePath = Application.StartupPath;
+            var domainFilePath = Application.StartupPath; //Set the directory containing the dll
+            var payloadFilePath = Application.StartupPath;
 
-            PayloadInjector injector = new PayloadInjector(targetProcess, domainFilePath, textboxDomain.Text, payloadFilePath, textboxPayload.Text, textboxArgs.Text);
+            var injector = new PayloadInjector(targetProcess, domainFilePath, textboxDomain.Text, payloadFilePath,
+                textboxPayload.Text, textboxArgs.Text);
             injector.InjectAndForget();
         }
     }

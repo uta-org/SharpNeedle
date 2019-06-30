@@ -1,26 +1,26 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
+using System.IO;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using Binarysharp.MemoryManagement;
 using Binarysharp.MemoryManagement.Assembly.CallingConvention;
-using Binarysharp.MemoryManagement.Modules;
 
 namespace SharpNeedle
 {
     public class PayloadInjector
     {
-        private Process targetProcess;
-        private string domainPath;
-        private string payloadPath;
-        private string payloadArgs;
-        private string domainName;
-        private string payloadName;
-        public PayloadInjector(Process _targetProcess, string _domainPath, string _domainName, string _payloadPath, string _payloadName, string _payloadArgs)
+        private readonly string domainName;
+        private readonly string domainPath;
+
+        private MemorySharp MemorySharp;
+        private readonly string payloadArgs;
+        private readonly string payloadName;
+        private readonly string payloadPath;
+        private readonly Process targetProcess;
+
+        public PayloadInjector(Process _targetProcess, string _domainPath, string _domainName, string _payloadPath,
+            string _payloadName, string _payloadArgs)
         {
             targetProcess = _targetProcess;
             domainPath = _domainPath;
@@ -35,18 +35,16 @@ namespace SharpNeedle
                 domainPath = domainPath + "\\";
         }
 
-        private MemorySharp MemorySharp;
         public void InjectAndWait()
         {
-            this.MemorySharp = new MemorySharp(targetProcess);
+            MemorySharp = new MemorySharp(targetProcess);
 
-            MemorySharp.Modules.Inject(domainPath + "\\" + domainName, true);
-            RemoteFunction remoteFunction = this.MemorySharp[domainName]["LoadDomainHostSettings"];
+            MemorySharp.Modules.Inject(domainPath + "\\" + domainName);
+            var remoteFunction = MemorySharp[domainName]["LoadDomainHostSettings"];
 
-            object[] arrayObjects = new[] { payloadPath, payloadName, payloadArgs };
+            object[] arrayObjects = {payloadPath, payloadName, payloadArgs};
             remoteFunction.Execute(CallingConventions.Cdecl, arrayObjects);
-            this.MemorySharp[domainName]["HostDomain"].Execute(CallingConventions.Cdecl, new object[] {});
-
+            MemorySharp[domainName]["HostDomain"].Execute(CallingConventions.Cdecl);
         }
 
         public void InjectAndForget()
@@ -54,12 +52,63 @@ namespace SharpNeedle
             ThreadPool.QueueUserWorkItem(callback => InjectAndWait());
         }
 
+        #region InjectDLL
 
+        private static IntPtr InjectDllCreateThread(IntPtr hProcess, string szDllPath)
+        {
+            if (hProcess == IntPtr.Zero)
+                throw new ArgumentNullException("hProcess");
 
+            if (szDllPath.Length == 0)
+                throw new ArgumentNullException("szDllPath");
 
+            if (!szDllPath.Contains("\\"))
+                szDllPath = Path.GetFullPath(szDllPath);
+
+            if (!File.Exists(szDllPath))
+                throw new ArgumentException("DLL not found.", "szDllPath");
+
+            var dwBaseAddress = IntPtr.Zero;
+            IntPtr lpLoadLibrary;
+            IntPtr lpDll;
+            IntPtr hThread;
+
+            lpLoadLibrary = GetProcAddress(GetModuleHandle("kernel32.dll"), "LoadLibraryA");
+            if (lpLoadLibrary != IntPtr.Zero)
+            {
+                lpDll = VirtualAllocEx(hProcess, IntPtr.Zero, 1000, AllocationType.Commit,
+                    MemoryProtection.ExecuteReadWrite);
+
+                if (lpDll != IntPtr.Zero)
+                {
+                    if (WriteAsciiString(hProcess, lpDll, szDllPath))
+                    {
+                        IntPtr dwThreadId;
+                        hThread = CreateRemoteThread(hProcess, IntPtr.Zero, 0, lpLoadLibrary, lpDll,
+                            ThreadFlags.THREAD_EXECUTE_IMMEDIATELY, out dwThreadId);
+
+                        //  IntPtr p = GetProcAddress(hThread, "HostDomain");
+
+                        //wait for thread handle to have signaled state
+                        //exit code will be equal to the base address of the dll
+                        if (WaitForSingleObject(hThread, 5000) == (uint) ThreadWaitValues.WAIT_OBJECT_0)
+                            GetExitCodeThread(hThread, out dwBaseAddress);
+
+                        CloseHandle(hThread);
+                    }
+
+                    VirtualFreeEx(hProcess, lpDll, 0, FreeType.Release);
+                }
+            }
+
+            return dwBaseAddress;
+        }
+
+        #endregion
 
 
         #region Enums
+
         [Flags]
         public enum AllocationType
         {
@@ -109,53 +158,63 @@ namespace SharpNeedle
         public enum FreeType
         {
             Decommit = 0x4000,
-            Release = 0x8000,
+            Release = 0x8000
         }
 
         [Flags]
         public enum ThreadFlags
         {
             /// <summary>
-            /// The thread will execute immediately.
+            ///     The thread will execute immediately.
             /// </summary>
             THREAD_EXECUTE_IMMEDIATELY = 0,
+
             /// <summary>
-            /// The thread will be created in a suspended state.  Use <see cref="Imports.ResumeThread"/> to resume the thread.
+            ///     The thread will be created in a suspended state.  Use <see cref="Imports.ResumeThread" /> to resume the thread.
             /// </summary>
             CREATE_SUSPENDED = 0x04,
+
             /// <summary>
-            /// The dwStackSize parameter specifies the initial reserve size of the stack. If this flag is not specified, dwStackSize specifies the commit size.
+            ///     The dwStackSize parameter specifies the initial reserve size of the stack. If this flag is not specified,
+            ///     dwStackSize specifies the commit size.
             /// </summary>
             STACK_SIZE_PARAM_IS_A_RESERVATION = 0x00010000,
+
             /// <summary>
-            /// The thread is still active.
+            ///     The thread is still active.
             /// </summary>
-            STILL_ACTIVE = 259,
+            STILL_ACTIVE = 259
         }
 
         [Flags]
         public enum ThreadWaitValues : uint
         {
             /// <summary>
-            /// The object is in a signaled state.
+            ///     The object is in a signaled state.
             /// </summary>
             WAIT_OBJECT_0 = 0x00000000,
+
             /// <summary>
-            /// The specified object is a mutex object that was not released by the thread that owned the mutex object before the owning thread terminated. Ownership of the mutex object is granted to the calling thread, and the mutex is set to nonsignaled.
+            ///     The specified object is a mutex object that was not released by the thread that owned the mutex object before the
+            ///     owning thread terminated. Ownership of the mutex object is granted to the calling thread, and the mutex is set to
+            ///     nonsignaled.
             /// </summary>
             WAIT_ABANDONED = 0x00000080,
+
             /// <summary>
-            /// The time-out interval elapsed, and the object's state is nonsignaled.
+            ///     The time-out interval elapsed, and the object's state is nonsignaled.
             /// </summary>
             WAIT_TIMEOUT = 0x00000102,
+
             /// <summary>
-            /// The wait has failed.
+            ///     The wait has failed.
             /// </summary>
             WAIT_FAILED = 0xFFFFFFFF,
+
             /// <summary>
-            /// Wait an infinite amount of time for the object to become signaled.
+            ///     Wait an infinite amount of time for the object to become signaled.
             /// </summary>
-            INFINITE = 0xFFFFFFFF,
+            INFINITE = 0xFFFFFFFF
         }
 
         #endregion
@@ -163,67 +222,68 @@ namespace SharpNeedle
         #region DLLImport
 
         [DllImport("kernel32.dll")]
-        static extern IntPtr VirtualAllocEx(IntPtr hProcess,
-                                                    IntPtr lpAddress,
-                                                    int dwSize,
-                                                    AllocationType flAllocationType,
-                                                    MemoryProtection flProtect);
+        private static extern IntPtr VirtualAllocEx(IntPtr hProcess,
+            IntPtr lpAddress,
+            int dwSize,
+            AllocationType flAllocationType,
+            MemoryProtection flProtect);
 
         [DllImport("kernel32.dll")]
-        static extern IntPtr OpenProcess(ProcessAccessFlags DesiredAccess,
-                                                    bool bInheritHandle,
-                                                    int dwProcessId);
+        private static extern IntPtr OpenProcess(ProcessAccessFlags DesiredAccess,
+            bool bInheritHandle,
+            int dwProcessId);
 
         [DllImport("kernel32", CharSet = CharSet.Ansi)]
-        static extern IntPtr GetProcAddress(IntPtr hModule,
-                                                    string procedureName);
+        private static extern IntPtr GetProcAddress(IntPtr hModule,
+            string procedureName);
 
 
         [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
-        static extern IntPtr GetModuleHandle(string lpModuleName);
+        private static extern IntPtr GetModuleHandle(string lpModuleName);
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        static extern bool WriteProcessMemory(IntPtr hProcess,
-                                                    IntPtr lpBaseAddress,
-                                                    IntPtr lpBuffer,
-                                                    int nSize,
-                                                    out int lpNumberOfBytesWritten);
+        private static extern bool WriteProcessMemory(IntPtr hProcess,
+            IntPtr lpBaseAddress,
+            IntPtr lpBuffer,
+            int nSize,
+            out int lpNumberOfBytesWritten);
 
         [DllImport("kernel32.dll")]
-        static extern IntPtr CreateRemoteThread(IntPtr hProcess,
-                                                    IntPtr lpThreadAttributes,
-                                                    uint dwStackSize,
-                                                    IntPtr lpStartAddress,
-                                                    IntPtr lpParameter,
-                                                    ThreadFlags dwCreationFlags,
-                                                    out IntPtr lpThreadId);
+        private static extern IntPtr CreateRemoteThread(IntPtr hProcess,
+            IntPtr lpThreadAttributes,
+            uint dwStackSize,
+            IntPtr lpStartAddress,
+            IntPtr lpParameter,
+            ThreadFlags dwCreationFlags,
+            out IntPtr lpThreadId);
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        static extern UInt32 WaitForSingleObject(IntPtr hHandle,
-                                                    UInt32 dwMilliseconds);
+        private static extern uint WaitForSingleObject(IntPtr hHandle,
+            uint dwMilliseconds);
 
         [DllImport("kernel32.dll")]
-        static extern bool GetExitCodeThread(IntPtr hThread,
-                                                out IntPtr lpExitCode);
+        private static extern bool GetExitCodeThread(IntPtr hThread,
+            out IntPtr lpExitCode);
 
         [DllImport("kernel32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        static extern bool CloseHandle(IntPtr hObject);
+        private static extern bool CloseHandle(IntPtr hObject);
 
         [DllImport("kernel32.dll", SetLastError = true, ExactSpelling = true)]
-        static extern bool VirtualFreeEx(IntPtr hProcess,
-                                                IntPtr lpAddress,
-                                                int dwSize,
-                                                FreeType dwFreeType);
+        private static extern bool VirtualFreeEx(IntPtr hProcess,
+            IntPtr lpAddress,
+            int dwSize,
+            FreeType dwFreeType);
 
         #endregion
 
         #region Memory Write
+
         private static bool WriteUnicodeString(IntPtr hProcess, IntPtr dwAddress, string Value)
         {
-            IntPtr lpBuffer = IntPtr.Zero;
-            int iBytesWritten = 0;
-            int nSize = 0;
+            var lpBuffer = IntPtr.Zero;
+            var iBytesWritten = 0;
+            var nSize = 0;
 
             try
             {
@@ -233,7 +293,8 @@ namespace SharpNeedle
                 WriteProcessMemory(hProcess, dwAddress, lpBuffer, nSize, out iBytesWritten);
 
                 if (nSize != iBytesWritten)
-                    throw new Exception("WriteUnicodeString failed!  Number of bytes actually written differed from request.");
+                    throw new Exception(
+                        "WriteUnicodeString failed!  Number of bytes actually written differed from request.");
             }
             catch
             {
@@ -244,14 +305,15 @@ namespace SharpNeedle
                 if (lpBuffer != IntPtr.Zero)
                     Marshal.FreeHGlobal(lpBuffer);
             }
+
             return true;
         }
 
         private static bool WriteAsciiString(IntPtr hProcess, IntPtr dwAddress, string Value)
         {
-            IntPtr lpBuffer = IntPtr.Zero;
-            int iBytesWritten = 0;
-            int nSize = 0;
+            var lpBuffer = IntPtr.Zero;
+            var iBytesWritten = 0;
+            var nSize = 0;
 
             try
             {
@@ -261,7 +323,8 @@ namespace SharpNeedle
                 WriteProcessMemory(hProcess, dwAddress, lpBuffer, nSize, out iBytesWritten);
 
                 if (nSize != iBytesWritten)
-                    throw new Exception("WriteUnicodeString failed!  Number of bytes actually written differed from request.");
+                    throw new Exception(
+                        "WriteUnicodeString failed!  Number of bytes actually written differed from request.");
             }
             catch
             {
@@ -278,12 +341,13 @@ namespace SharpNeedle
 
         private static bool WriteBytes(IntPtr hProcess, IntPtr dwAddress, byte[] lpBytes)
         {
-            IntPtr lpBuffer = IntPtr.Zero;
-            int iBytesWritten = 0;
+            var lpBuffer = IntPtr.Zero;
+            var iBytesWritten = 0;
 
             try
             {
-                lpBuffer = Marshal.AllocHGlobal(Marshal.SizeOf(lpBytes[0]) * lpBytes.Length); //allocate unmanaged memory
+                lpBuffer = Marshal.AllocHGlobal(Marshal.SizeOf(lpBytes[0]) *
+                                                lpBytes.Length); //allocate unmanaged memory
 
                 Marshal.Copy(lpBytes, 0, lpBuffer, lpBytes.Length);
 
@@ -306,57 +370,5 @@ namespace SharpNeedle
         }
 
         #endregion
-
-        #region InjectDLL
-
-        private static IntPtr InjectDllCreateThread(IntPtr hProcess, string szDllPath)
-        {
-            if (hProcess == IntPtr.Zero)
-                throw new ArgumentNullException("hProcess");
-
-            if (szDllPath.Length == 0)
-                throw new ArgumentNullException("szDllPath");
-
-            if (!szDllPath.Contains("\\"))
-                szDllPath = System.IO.Path.GetFullPath(szDllPath);
-
-            if (!System.IO.File.Exists(szDllPath))
-                throw new ArgumentException("DLL not found.", "szDllPath");
-
-            IntPtr dwBaseAddress = IntPtr.Zero;
-            IntPtr lpLoadLibrary;
-            IntPtr lpDll;
-            IntPtr hThread;
-
-            lpLoadLibrary = GetProcAddress(GetModuleHandle("kernel32.dll"), "LoadLibraryA");
-            if (lpLoadLibrary != IntPtr.Zero)
-            {
-                lpDll = VirtualAllocEx(hProcess, IntPtr.Zero, 1000, AllocationType.Commit, MemoryProtection.ExecuteReadWrite);
-
-                if (lpDll != IntPtr.Zero)
-                {
-                    if (WriteAsciiString(hProcess, lpDll, szDllPath))
-                    {
-                        IntPtr dwThreadId;
-                        hThread = CreateRemoteThread(hProcess, IntPtr.Zero, 0, lpLoadLibrary, lpDll, ThreadFlags.THREAD_EXECUTE_IMMEDIATELY, out dwThreadId);
-
-                      //  IntPtr p = GetProcAddress(hThread, "HostDomain");
-
-                        //wait for thread handle to have signaled state
-                        //exit code will be equal to the base address of the dll
-                        if (WaitForSingleObject(hThread, 5000) == (uint)ThreadWaitValues.WAIT_OBJECT_0)
-                            GetExitCodeThread(hThread, out dwBaseAddress);
-
-                        CloseHandle(hThread);
-                    }
-
-                    VirtualFreeEx(hProcess, lpDll, 0, FreeType.Release);
-                }
-            }
-
-            return dwBaseAddress;
-        }
-        #endregion
-
     }
 }

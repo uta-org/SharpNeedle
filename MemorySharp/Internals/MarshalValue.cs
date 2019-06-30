@@ -13,21 +13,22 @@ using Binarysharp.MemoryManagement.Memory;
 namespace Binarysharp.MemoryManagement.Internals
 {
     /// <summary>
-    /// The factory to create instance of the <see cref="MarshalledValue{T}"/> class.
+    ///     The factory to create instance of the <see cref="MarshalledValue{T}" /> class.
     /// </summary>
     /// <remarks>
-    /// A factory pattern is used because C# 5.0 constructor doesn't support type inference.
-    /// More info from Eric Lippert here : http://stackoverflow.com/questions/3570167/why-cant-the-c-sharp-constructor-infer-type
+    ///     A factory pattern is used because C# 5.0 constructor doesn't support type inference.
+    ///     More info from Eric Lippert here :
+    ///     http://stackoverflow.com/questions/3570167/why-cant-the-c-sharp-constructor-infer-type
     /// </remarks>
     public static class MarshalValue
     {
         /// <summary>
-        /// Marshals a given value into the remote process.
+        ///     Marshals a given value into the remote process.
         /// </summary>
         /// <typeparam name="T">The type of the value. It can be a primitive or reference data type.</typeparam>
         /// <param name="memorySharp">The concerned process.</param>
         /// <param name="value">The value to marshal.</param>
-        /// <returns>The return value is an new instance of the <see cref="MarshalledValue{T}"/> class.</returns>
+        /// <returns>The return value is an new instance of the <see cref="MarshalledValue{T}" /> class.</returns>
         public static MarshalledValue<T> Marshal<T>(MemorySharp memorySharp, T value)
         {
             return new MarshalledValue<T>(memorySharp, value);
@@ -35,38 +36,45 @@ namespace Binarysharp.MemoryManagement.Internals
     }
 
     /// <summary>
-    /// Class marshalling a value into the remote process.
+    ///     Class marshalling a value into the remote process.
     /// </summary>
     /// <typeparam name="T">The type of the value. It can be a primitive or reference data type.</typeparam>
     public class MarshalledValue<T> : IMarshalledValue
     {
         #region Fields
+
         /// <summary>
-        /// The reference of the <see cref="MemorySharp"/> object.
+        ///     The reference of the <see cref="MemorySharp" /> object.
         /// </summary>
         protected readonly MemorySharp MemorySharp;
+
         #endregion
 
         #region Properties
+
         /// <summary>
-        /// The memory allocated where the value is fully written if needed. It can be unused.
+        ///     The memory allocated where the value is fully written if needed. It can be unused.
         /// </summary>
         public RemoteAllocation Allocated { get; private set; }
+
         /// <summary>
-        /// The reference of the value. It can be directly the value or a pointer.
+        ///     The reference of the value. It can be directly the value or a pointer.
         /// </summary>
         public IntPtr Reference { get; private set; }
+
         /// <summary>
-        /// The initial value.
+        ///     The initial value.
         /// </summary>
-        public T Value { get; private set; }
+        public T Value { get; }
+
         #endregion
 
         #region Constructor/Destructor
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="MarshalledValue{T}"/> class.
+        ///     Initializes a new instance of the <see cref="MarshalledValue{T}" /> class.
         /// </summary>
-        /// <param name="memorySharp">The reference of the <see cref="MemorySharp"/> object.</param>
+        /// <param name="memorySharp">The reference of the <see cref="MemorySharp" /> object.</param>
         /// <param name="value">The value to marshal.</param>
         public MarshalledValue(MemorySharp memorySharp, T value)
         {
@@ -76,34 +84,41 @@ namespace Binarysharp.MemoryManagement.Internals
             // Marshal the value
             Marshal();
         }
+
         /// <summary>
-        /// Frees resources and perform other cleanup operations before it is reclaimed by garbage collection.
+        ///     Frees resources and perform other cleanup operations before it is reclaimed by garbage collection.
         /// </summary>
         ~MarshalledValue()
         {
             Dispose();
         }
+
         #endregion
 
         #region Methods
+
         #region Dispose (implementation of IDisposable)
+
         /// <summary>
-        /// Releases all resources used by the <see cref="RemoteAllocation"/> object.
+        ///     Releases all resources used by the <see cref="RemoteAllocation" /> object.
         /// </summary>
         public void Dispose()
         {
             // Free the allocated memory
-            if(Allocated != null)
+            if (Allocated != null)
                 Allocated.Dispose();
             // Set the pointer to zero
             Reference = IntPtr.Zero;
             // Avoid the finalizer
             GC.SuppressFinalize(this);
         }
+
         #endregion
+
         #region Marshal (private)
+
         /// <summary>
-        /// Marshals the value into the remote process.
+        ///     Marshals the value into the remote process.
         /// </summary>
         private void Marshal()
         {
@@ -144,7 +159,9 @@ namespace Binarysharp.MemoryManagement.Internals
                 }
             }
         }
+
         #endregion
+
         #endregion
     }
 }

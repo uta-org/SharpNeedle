@@ -14,7 +14,9 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("MemorySharp")]
-[assembly: AssemblyDescription("MemorySharp is a C# based memory editing library targeting Windows applications, offering various functions to extract and inject data and codes into remote processes to allow interoperability.")]
+[assembly:
+    AssemblyDescription(
+        "MemorySharp is a C# based memory editing library targeting Windows applications, offering various functions to extract and inject data and codes into remote processes to allow interoperability.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Binarysharp")]
 [assembly: AssemblyProduct("MemorySharp")]

@@ -14,42 +14,14 @@ using System.Xml.Serialization;
 namespace Binarysharp.MemoryManagement.Helpers
 {
     /// <summary>
-    /// Static helper class providing tools for serializing/deserializing objects.
+    ///     Static helper class providing tools for serializing/deserializing objects.
     /// </summary>
     public static class SerializationHelper
     {
-        #region ExportToXmlFile
-        /// <summary>
-        /// Serializes the specified object and writes the XML document to the specified path.
-        /// </summary>
-        /// <typeparam name="T">The type of the object to serialize.</typeparam>
-        /// <param name="obj">The object to serialize.</param>
-        /// <param name="path">The path where the file is saved.</param>
-        /// <param name="encoding">The encoding to generate.</param>
-        public static void ExportToXmlFile<T>(T obj, string path, Encoding encoding)
-        {
-            // Create the stream to write into the specified file
-            using (var file = new StreamWriter(path, false, encoding))
-            {
-                // Write the content by calling the method to serialize the object
-                file.Write(ExportToXmlString(obj));
-            }
-        }
-        /// <summary>
-        /// Serializes the specified object and writes the XML document to the specified path using <see cref="Encoding.UTF8"/> encoding.
-        /// </summary>
-        /// <typeparam name="T">The type of the object to serialize.</typeparam>
-        /// <param name="obj">The object to serialize.</param>
-        /// <param name="path">The path where the file is saved.</param>
-        public static void ExportToXmlFile<T>(T obj, string path)
-        {
-            ExportToXmlFile(obj, path, Encoding.UTF8);
-        }
-        #endregion
-
         #region ExportToXmlString
+
         /// <summary>
-        /// Serializes the specified object and returns the XML document.
+        ///     Serializes the specified object and returns the XML document.
         /// </summary>
         /// <typeparam name="T">The type of the object to serialize.</typeparam>
         /// <param name="obj">The object to serialize.</param>
@@ -66,11 +38,67 @@ namespace Binarysharp.MemoryManagement.Helpers
                 return stringWriter.ToString();
             }
         }
+
+        #endregion
+
+        #region ImportFromXmlString
+
+        /// <summary>
+        ///     Deserializes the XML document to the specified object.
+        /// </summary>
+        /// <typeparam name="T">The type of the object to deserialize.</typeparam>
+        /// <param name="serializedObj">The string representing the serialized object.</param>
+        /// <returns>The deserialized object.</returns>
+        public static T ImportFromXmlString<T>(string serializedObj)
+        {
+            // Initialize the required objects for deserialization
+            var serializer = new XmlSerializer(typeof(T));
+            using (var stringWriter = new StringReader(serializedObj))
+            {
+                // Return the serialized object
+                return (T) serializer.Deserialize(stringWriter);
+            }
+        }
+
+        #endregion
+
+        #region ExportToXmlFile
+
+        /// <summary>
+        ///     Serializes the specified object and writes the XML document to the specified path.
+        /// </summary>
+        /// <typeparam name="T">The type of the object to serialize.</typeparam>
+        /// <param name="obj">The object to serialize.</param>
+        /// <param name="path">The path where the file is saved.</param>
+        /// <param name="encoding">The encoding to generate.</param>
+        public static void ExportToXmlFile<T>(T obj, string path, Encoding encoding)
+        {
+            // Create the stream to write into the specified file
+            using (var file = new StreamWriter(path, false, encoding))
+            {
+                // Write the content by calling the method to serialize the object
+                file.Write(ExportToXmlString(obj));
+            }
+        }
+
+        /// <summary>
+        ///     Serializes the specified object and writes the XML document to the specified path using
+        ///     <see cref="Encoding.UTF8" /> encoding.
+        /// </summary>
+        /// <typeparam name="T">The type of the object to serialize.</typeparam>
+        /// <param name="obj">The object to serialize.</param>
+        /// <param name="path">The path where the file is saved.</param>
+        public static void ExportToXmlFile<T>(T obj, string path)
+        {
+            ExportToXmlFile(obj, path, Encoding.UTF8);
+        }
+
         #endregion
 
         #region ImportFromXmlFile
+
         /// <summary>
-        /// Deserializes the specified file into an object.
+        ///     Deserializes the specified file into an object.
         /// </summary>
         /// <typeparam name="T">The type of the object to deserialize.</typeparam>
         /// <param name="path">The path where the object is read.</param>
@@ -85,8 +113,9 @@ namespace Binarysharp.MemoryManagement.Helpers
                 return ImportFromXmlString<T>(file.ReadToEnd());
             }
         }
+
         /// <summary>
-        /// Deserializes the specified file into an object using <see cref="Encoding.UTF8"/> encoding.
+        ///     Deserializes the specified file into an object using <see cref="Encoding.UTF8" /> encoding.
         /// </summary>
         /// <typeparam name="T">The type of the object to deserialize.</typeparam>
         /// <param name="path">The path where the object is read.</param>
@@ -95,25 +124,7 @@ namespace Binarysharp.MemoryManagement.Helpers
         {
             return ImportFromXmlFile<T>(path, Encoding.UTF8);
         }
-        #endregion
 
-        #region ImportFromXmlString
-        /// <summary>
-        /// Deserializes the XML document to the specified object.
-        /// </summary>
-        /// <typeparam name="T">The type of the object to deserialize.</typeparam>
-        /// <param name="serializedObj">The string representing the serialized object.</param>
-        /// <returns>The deserialized object.</returns>
-        public static T ImportFromXmlString<T>(string serializedObj)
-        {
-            // Initialize the required objects for deserialization
-            var serializer = new XmlSerializer(typeof(T));
-            using (var stringWriter = new StringReader(serializedObj))
-            {
-                // Return the serialized object
-                return (T)serializer.Deserialize(stringWriter);
-            }
-        }
         #endregion
     }
 }

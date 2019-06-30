@@ -10,35 +10,42 @@
 namespace Binarysharp.MemoryManagement.Threading
 {
     #region SegmentRegisters
+
     /// <summary>
-    /// List of segment registers.
+    ///     List of segment registers.
     /// </summary>
     public enum SegmentRegisters
     {
         /// <summary>
-        /// The code segment.
+        ///     The code segment.
         /// </summary>
         Cs,
+
         /// <summary>
-        /// The Data segment.
+        ///     The Data segment.
         /// </summary>
         Ds,
+
         /// <summary>
-        /// The extra data segment.
+        ///     The extra data segment.
         /// </summary>
         Es,
+
         /// <summary>
-        /// The points to Thread Information Block (TIB).
+        ///     The points to Thread Information Block (TIB).
         /// </summary>
         Fs,
+
         /// <summary>
-        /// The extra data segment.
+        ///     The extra data segment.
         /// </summary>
         Gs,
+
         /// <summary>
-        /// The stack segment.
+        ///     The stack segment.
         /// </summary>
         Ss
     }
+
     #endregion
 }
