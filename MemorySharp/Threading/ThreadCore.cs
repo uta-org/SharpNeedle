@@ -50,10 +50,10 @@ namespace Binarysharp.MemoryManagement.Threading
                 return ret;
 
             // Else couldn't create thread, throws an exception
-            throw new Win32Exception(string.Format("Couldn't create the thread at 0x{0}.", startAddress.ToString("X")));
+            throw new Win32Exception($"Couldn't create the thread at 0x{startAddress.ToString("X")}.");
         }
 
-        #endregion
+        #endregion CreateRemoteThread
 
         #region GetExitCodeThread
 
@@ -84,7 +84,7 @@ namespace Binarysharp.MemoryManagement.Threading
             return exitCode;
         }
 
-        #endregion
+        #endregion GetExitCodeThread
 
         #region GetThreadContext
 
@@ -101,7 +101,7 @@ namespace Binarysharp.MemoryManagement.Threading
             HandleManipulator.ValidateAsArgument(threadHandle, "threadHandle");
 
             // Allocate a thread context structure
-            var context = new ThreadContext {ContextFlags = contextFlags};
+            var context = new ThreadContext { ContextFlags = contextFlags };
 
             // Set the context flag
 
@@ -113,7 +113,7 @@ namespace Binarysharp.MemoryManagement.Threading
             throw new Win32Exception("Couldn't get the thread context.");
         }
 
-        #endregion
+        #endregion GetThreadContext
 
         #region GetThreadSelectorEntry
 
@@ -134,11 +134,10 @@ namespace Binarysharp.MemoryManagement.Threading
                 return entry;
 
             // Else couldn't get the selector entry, throws an exception
-            throw new Win32Exception(string.Format("Couldn't get the selector entry for this selector: {0}.",
-                selector));
+            throw new Win32Exception($"Couldn't get the selector entry for this selector: {selector}.");
         }
 
-        #endregion
+        #endregion GetThreadSelectorEntry
 
         #region OpenThread
 
@@ -158,10 +157,10 @@ namespace Binarysharp.MemoryManagement.Threading
                 return ret;
 
             // Else couldn't open the thread, throws an exception
-            throw new Win32Exception(string.Format("Couldn't open the thread #{0}.", threadId));
+            throw new Win32Exception($"Couldn't open the thread #{threadId}.");
         }
 
-        #endregion
+        #endregion OpenThread
 
         #region NtQueryInformationThread
 
@@ -188,10 +187,10 @@ namespace Binarysharp.MemoryManagement.Threading
 
             // Else, couldn't get the thread info, throws an exception
             throw new ApplicationException(
-                string.Format("Couldn't get the information from the thread, error code '{0}'.", ret));
+                $"Couldn't get the information from the thread, error code '{ret}'.");
         }
 
-        #endregion
+        #endregion NtQueryInformationThread
 
         #region ResumeThread
 
@@ -216,7 +215,7 @@ namespace Binarysharp.MemoryManagement.Threading
             return ret;
         }
 
-        #endregion
+        #endregion ResumeThread
 
         #region SetThreadContext
 
@@ -238,7 +237,7 @@ namespace Binarysharp.MemoryManagement.Threading
                 throw new Win32Exception("Couldn't set the thread context.");
         }
 
-        #endregion
+        #endregion SetThreadContext
 
         #region SuspendThread
 
@@ -262,7 +261,7 @@ namespace Binarysharp.MemoryManagement.Threading
             return ret;
         }
 
-        #endregion
+        #endregion SuspendThread
 
         #region TerminateThread
 
@@ -284,7 +283,7 @@ namespace Binarysharp.MemoryManagement.Threading
                 throw new Win32Exception("Couldn't terminate the thread.");
         }
 
-        #endregion
+        #endregion TerminateThread
 
         #region WaitForSingleObject
 
@@ -333,6 +332,6 @@ namespace Binarysharp.MemoryManagement.Threading
             return ret;
         }
 
-        #endregion
+        #endregion WaitForSingleObject
     }
 }

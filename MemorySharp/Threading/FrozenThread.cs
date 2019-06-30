@@ -28,7 +28,7 @@ namespace Binarysharp.MemoryManagement.Threading
             Thread = thread;
         }
 
-        #endregion
+        #endregion Constructor
 
         #region Properties
 
@@ -37,7 +37,7 @@ namespace Binarysharp.MemoryManagement.Threading
         /// </summary>
         public RemoteThread Thread { get; }
 
-        #endregion
+        #endregion Properties
 
         #region Methods
 
@@ -52,7 +52,7 @@ namespace Binarysharp.MemoryManagement.Threading
             Thread.Resume();
         }
 
-        #endregion
+        #endregion Dispose (implementation of IDisposable)
 
         #region ToString (override)
 
@@ -61,11 +61,11 @@ namespace Binarysharp.MemoryManagement.Threading
         /// </summary>
         public override string ToString()
         {
-            return string.Format("Id = {0}", Thread.Id);
+            return $"Id = {Thread.Id}";
         }
 
-        #endregion
+        #endregion ToString (override)
 
-        #endregion
+        #endregion Methods
     }
 }

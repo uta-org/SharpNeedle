@@ -61,16 +61,22 @@ namespace SharpDomain
 
         #region IAssemblyLoader Members
 
+        public static Assembly LoadRemoteAssembly(string filename)
+        {
+            byte[] asmdata = File.ReadAllBytes(filename);
+            return Assembly.Load(asmdata);
+        }
+
         public void LoadAndRun(string file, string args)
         {
-            var asm = Assembly.Load(file);
+            var asm = LoadRemoteAssembly(file);
 
             var STAMethods = asm.GetTypes()
                 .SelectMany(t => t.GetMethods())
                 .Where(m => m.GetCustomAttributes(typeof(STAThreadAttribute), false).Length > 0)
                 .ToArray();
 
-            if (STAMethods.Count() != 1)
+            if (STAMethods.Length != 1)
             {
                 if (!STAMethods.Any())
                 {
@@ -87,13 +93,19 @@ namespace SharpDomain
 
             var entry2 = STAMethods[0];
             if (entry2 == null)
-                SharpLoader.ShowError(new Exception(string.Format("[STAThread] Attribute for {0} not found", file)));
+                SharpLoader.ShowError(new Exception($"[STAThread] Attribute for {file} not found"));
             // MessageBox.Show("Entry of " + file + " not found.");
 
+            bool hasEntryParameters = entry2.GetParameters().Length > 0;
             if (string.IsNullOrEmpty(args))
-                entry2.Invoke(null, null);
+                entry2.Invoke(null, hasEntryParameters ? new[] { string.Empty } : null);
             else
-                entry2.Invoke(null, new[] { args });
+            {
+                if (!hasEntryParameters)
+                    entry2.Invoke(null, new[] { args });
+                else
+                    throw new Exception("Can't pass parameters to a parameterless method!");
+            }
         }
 
         #endregion IAssemblyLoader Members

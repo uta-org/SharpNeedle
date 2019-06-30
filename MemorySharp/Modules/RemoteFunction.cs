@@ -25,7 +25,7 @@ namespace Binarysharp.MemoryManagement.Modules
             Name = functionName;
         }
 
-        #endregion
+        #endregion Constructor
 
         #region Properties
 
@@ -34,7 +34,7 @@ namespace Binarysharp.MemoryManagement.Modules
         /// </summary>
         public string Name { get; }
 
-        #endregion
+        #endregion Properties
 
         #region Methods
 
@@ -45,11 +45,11 @@ namespace Binarysharp.MemoryManagement.Modules
         /// </summary>
         public override string ToString()
         {
-            return string.Format("BaseAddress = 0x{0:X} Name = {1}", BaseAddress.ToInt64(), Name);
+            return $"BaseAddress = 0x{BaseAddress.ToInt64():X} Name = {Name}";
         }
 
-        #endregion
+        #endregion ToString (override)
 
-        #endregion
+        #endregion Methods
     }
 }

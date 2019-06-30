@@ -28,7 +28,7 @@ namespace Binarysharp.MemoryManagement.Memory
         {
         }
 
-        #endregion
+        #endregion Constructor
 
         #region Properties
 
@@ -39,7 +39,7 @@ namespace Binarysharp.MemoryManagement.Memory
         /// </summary>
         public MemoryBasicInformation Information => MemoryCore.Query(MemorySharp.Handle, BaseAddress);
 
-        #endregion
+        #endregion Information
 
         #region IsValid
 
@@ -48,9 +48,9 @@ namespace Binarysharp.MemoryManagement.Memory
         /// </summary>
         public override bool IsValid => base.IsValid && Information.State != MemoryStateFlags.Free;
 
-        #endregion
+        #endregion IsValid
 
-        #endregion
+        #endregion Properties
 
         #region Methods
 
@@ -68,7 +68,7 @@ namespace Binarysharp.MemoryManagement.Memory
             return new MemoryProtection(MemorySharp, BaseAddress, Information.RegionSize, protection, mustBeDisposed);
         }
 
-        #endregion
+        #endregion ChangeProtection
 
         #region Equals (override)
 
@@ -79,7 +79,7 @@ namespace Binarysharp.MemoryManagement.Memory
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            return obj.GetType() == GetType() && Equals((RemoteRegion) obj);
+            return obj.GetType() == GetType() && Equals((RemoteRegion)obj);
         }
 
         /// <summary>
@@ -93,7 +93,7 @@ namespace Binarysharp.MemoryManagement.Memory
                    Information.RegionSize.Equals(other.Information.RegionSize);
         }
 
-        #endregion
+        #endregion Equals (override)
 
         #region GetHashCode (override)
 
@@ -105,7 +105,7 @@ namespace Binarysharp.MemoryManagement.Memory
             return BaseAddress.GetHashCode() ^ MemorySharp.GetHashCode() ^ Information.RegionSize.GetHashCode();
         }
 
-        #endregion
+        #endregion GetHashCode (override)
 
         #region Operator (override)
 
@@ -119,7 +119,7 @@ namespace Binarysharp.MemoryManagement.Memory
             return !Equals(left, right);
         }
 
-        #endregion
+        #endregion Operator (override)
 
         #region Release
 
@@ -134,7 +134,7 @@ namespace Binarysharp.MemoryManagement.Memory
             BaseAddress = IntPtr.Zero;
         }
 
-        #endregion
+        #endregion Release
 
         #region ToString (override)
 
@@ -143,12 +143,12 @@ namespace Binarysharp.MemoryManagement.Memory
         /// </summary>
         public override string ToString()
         {
-            return string.Format("BaseAddress = 0x{0:X} Size = 0x{1:X} Protection = {2}", BaseAddress.ToInt64(),
-                Information.RegionSize, Information.Protect);
+            return
+                $"BaseAddress = 0x{BaseAddress.ToInt64():X} Size = 0x{Information.RegionSize:X} Protection = {Information.Protect}";
         }
 
-        #endregion
+        #endregion ToString (override)
 
-        #endregion
+        #endregion Methods
     }
 }

@@ -29,7 +29,7 @@ namespace Binarysharp.MemoryManagement.Modules
         internal static readonly IDictionary<Tuple<string, SafeMemoryHandle>, RemoteFunction> CachedFunctions =
             new Dictionary<Tuple<string, SafeMemoryHandle>, RemoteFunction>();
 
-        #endregion
+        #endregion Fields
 
         #region Constructor
 
@@ -44,7 +44,7 @@ namespace Binarysharp.MemoryManagement.Modules
             Native = module;
         }
 
-        #endregion
+        #endregion Constructor
 
         #region Properties
 
@@ -55,7 +55,7 @@ namespace Binarysharp.MemoryManagement.Modules
         /// </summary>
         public bool IsMainModule => MemorySharp.Native.MainModule.BaseAddress == BaseAddress;
 
-        #endregion
+        #endregion IsMainModule
 
         #region IsValid
 
@@ -71,7 +71,7 @@ namespace Binarysharp.MemoryManagement.Modules
             }
         }
 
-        #endregion
+        #endregion IsValid
 
         #region Name
 
@@ -80,7 +80,7 @@ namespace Binarysharp.MemoryManagement.Modules
         /// </summary>
         public string Name => Native.ModuleName;
 
-        #endregion
+        #endregion Name
 
         #region Native
 
@@ -89,7 +89,7 @@ namespace Binarysharp.MemoryManagement.Modules
         /// </summary>
         public ProcessModule Native { get; }
 
-        #endregion
+        #endregion Native
 
         #region Path
 
@@ -98,7 +98,7 @@ namespace Binarysharp.MemoryManagement.Modules
         /// </summary>
         public string Path => Native.FileName;
 
-        #endregion
+        #endregion Path
 
         #region Size
 
@@ -107,7 +107,7 @@ namespace Binarysharp.MemoryManagement.Modules
         /// </summary>
         public int Size => Native.ModuleMemorySize;
 
-        #endregion
+        #endregion Size
 
         #region This
 
@@ -118,9 +118,9 @@ namespace Binarysharp.MemoryManagement.Modules
         /// <returns>A new instance of a <see cref="RemoteFunction" /> class.</returns>
         public RemoteFunction this[string functionName] => FindFunction(functionName);
 
-        #endregion
+        #endregion This
 
-        #endregion
+        #endregion Properties
 
         #region Methods
 
@@ -137,7 +137,7 @@ namespace Binarysharp.MemoryManagement.Modules
             BaseAddress = IntPtr.Zero;
         }
 
-        #endregion
+        #endregion Eject
 
         #region FindFunction
 
@@ -195,7 +195,7 @@ namespace Binarysharp.MemoryManagement.Modules
             }
         }
 
-        #endregion
+        #endregion FindFunction
 
         #region InternalEject (internal)
 
@@ -210,7 +210,7 @@ namespace Binarysharp.MemoryManagement.Modules
             memorySharp.Threads.CreateAndJoin(memorySharp["kernel32"]["FreeLibrary"].BaseAddress, module.BaseAddress);
         }
 
-        #endregion
+        #endregion InternalEject (internal)
 
         #region ToString (override)
 
@@ -219,11 +219,11 @@ namespace Binarysharp.MemoryManagement.Modules
         /// </summary>
         public override string ToString()
         {
-            return string.Format("BaseAddress = 0x{0:X} Name = {1}", BaseAddress.ToInt64(), Name);
+            return $"BaseAddress = 0x{BaseAddress.ToInt64():X} Name = {Name}";
         }
 
-        #endregion
+        #endregion ToString (override)
 
-        #endregion
+        #endregion Methods
     }
 }

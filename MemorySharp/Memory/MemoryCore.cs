@@ -46,10 +46,10 @@ namespace Binarysharp.MemoryManagement.Memory
                 return ret;
 
             // If the pointer isn't valid, throws an exception
-            throw new Win32Exception(string.Format("Couldn't allocate memory of {0} byte(s).", size));
+            throw new Win32Exception($"Couldn't allocate memory of {size} byte(s).");
         }
 
-        #endregion
+        #endregion Allocate
 
         #region CloseHandle
 
@@ -64,10 +64,10 @@ namespace Binarysharp.MemoryManagement.Memory
 
             // Close the handle
             if (!NativeMethods.CloseHandle(handle))
-                throw new Win32Exception(string.Format("Couldn't close he handle 0x{0}.", handle));
+                throw new Win32Exception($"Couldn't close he handle 0x{handle}.");
         }
 
-        #endregion
+        #endregion CloseHandle
 
         #region Free
 
@@ -85,11 +85,10 @@ namespace Binarysharp.MemoryManagement.Memory
             // Free the memory
             if (!NativeMethods.VirtualFreeEx(processHandle, address, 0, MemoryReleaseFlags.Release))
                 // If the memory wasn't correctly freed, throws an exception
-                throw new Win32Exception(string.Format("The memory page 0x{0} cannot be freed.",
-                    address.ToString("X")));
+                throw new Win32Exception($"The memory page 0x{address.ToString("X")} cannot be freed.");
         }
 
-        #endregion
+        #endregion Free
 
         #region NtQueryInformationProcess
 
@@ -116,10 +115,10 @@ namespace Binarysharp.MemoryManagement.Memory
 
             // Else, couldn't get the process info, throws an exception
             throw new ApplicationException(
-                string.Format("Couldn't get the information from the process, error code '{0}'.", ret));
+                $"Couldn't get the information from the process, error code '{ret}'.");
         }
 
-        #endregion
+        #endregion NtQueryInformationProcess
 
         #region OpenProcess
 
@@ -139,10 +138,10 @@ namespace Binarysharp.MemoryManagement.Memory
                 return handle;
 
             // Else the handle isn't valid, throws an exception
-            throw new Win32Exception(string.Format("Couldn't open the process {0}.", processId));
+            throw new Win32Exception($"Couldn't open the process {processId}.");
         }
 
-        #endregion
+        #endregion OpenProcess
 
         #region ReadBytes
 
@@ -170,10 +169,10 @@ namespace Binarysharp.MemoryManagement.Memory
 
             // Else the data couldn't be read, throws an exception
             throw new Win32Exception(
-                string.Format("Couldn't read {0} byte(s) from 0x{1}.", size, address.ToString("X")));
+                $"Couldn't read {size} byte(s) from 0x{address.ToString("X")}.");
         }
 
-        #endregion
+        #endregion ReadBytes
 
         #region ChangeProtection
 
@@ -204,12 +203,11 @@ namespace Binarysharp.MemoryManagement.Memory
                 return oldProtection;
 
             // Else the protection couldn't be changed, throws an exception
-            throw new Win32Exception(string.Format(
-                "Couldn't change the protection of the memory at 0x{0} of {1} byte(s) to {2}.", address.ToString("X"),
-                size, protection));
+            throw new Win32Exception(
+                $"Couldn't change the protection of the memory at 0x{address.ToString("X")} of {size} byte(s) to {protection}.");
         }
 
-        #endregion
+        #endregion ChangeProtection
 
         #region WriteBytes
 
@@ -237,11 +235,10 @@ namespace Binarysharp.MemoryManagement.Memory
                     return nbBytesWritten;
 
             // Else the data couldn't be written, throws an exception
-            throw new Win32Exception(string.Format("Couldn't write {0} bytes to 0x{1}", byteArray.Length,
-                address.ToString("X")));
+            throw new Win32Exception($"Couldn't write {byteArray.Length} bytes to 0x{address.ToString("X")}");
         }
 
-        #endregion
+        #endregion WriteBytes
 
         #region Query
 
@@ -265,8 +262,8 @@ namespace Binarysharp.MemoryManagement.Memory
                 return memoryInfo;
 
             // Else the information couldn't be got
-            throw new Win32Exception(string.Format("Couldn't query information about the memory region 0x{0}",
-                baseAddress.ToString("X")));
+            throw new Win32Exception(
+                $"Couldn't query information about the memory region 0x{baseAddress.ToString("X")}");
         }
 
         /// <summary>
@@ -313,6 +310,6 @@ namespace Binarysharp.MemoryManagement.Memory
             } while (numberFrom < numberTo && ret != 0);
         }
 
-        #endregion
+        #endregion Query
     }
 }

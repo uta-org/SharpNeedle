@@ -24,7 +24,7 @@ namespace Binarysharp.MemoryManagement.Memory
         /// </summary>
         private readonly MemorySharp _memorySharp;
 
-        #endregion
+        #endregion Fields
 
         #region Properties
 
@@ -35,7 +35,7 @@ namespace Binarysharp.MemoryManagement.Memory
         /// </summary>
         public IntPtr BaseAddress { get; }
 
-        #endregion
+        #endregion BaseAddress
 
         #region MustBedisposed
 
@@ -44,7 +44,7 @@ namespace Binarysharp.MemoryManagement.Memory
         /// </summary>
         public bool MustBeDisposed { get; set; }
 
-        #endregion
+        #endregion MustBedisposed
 
         #region NewProtection
 
@@ -53,7 +53,7 @@ namespace Binarysharp.MemoryManagement.Memory
         /// </summary>
         public MemoryProtectionFlags NewProtection { get; }
 
-        #endregion
+        #endregion NewProtection
 
         #region OldProtection
 
@@ -62,7 +62,7 @@ namespace Binarysharp.MemoryManagement.Memory
         /// </summary>
         public MemoryProtectionFlags OldProtection { get; }
 
-        #endregion
+        #endregion OldProtection
 
         #region Size
 
@@ -71,9 +71,9 @@ namespace Binarysharp.MemoryManagement.Memory
         /// </summary>
         public int Size { get; }
 
-        #endregion
+        #endregion Size
 
-        #endregion
+        #endregion Properties
 
         #region Constructor/Destructor
 
@@ -109,7 +109,7 @@ namespace Binarysharp.MemoryManagement.Memory
                 Dispose();
         }
 
-        #endregion
+        #endregion Constructor/Destructor
 
         #region Methods
 
@@ -122,11 +122,11 @@ namespace Binarysharp.MemoryManagement.Memory
         {
             // Restore the memory protection
             MemoryCore.ChangeProtection(_memorySharp.Handle, BaseAddress, Size, OldProtection);
-            // Avoid the finalizer 
+            // Avoid the finalizer
             GC.SuppressFinalize(this);
         }
 
-        #endregion
+        #endregion Dispose (implementation of IDisposable)
 
         #region ToString (override)
 
@@ -135,12 +135,12 @@ namespace Binarysharp.MemoryManagement.Memory
         /// </summary>
         public override string ToString()
         {
-            return string.Format("BaseAddress = 0x{0:X} NewProtection = {1} OldProtection = {2}", BaseAddress.ToInt64(),
-                NewProtection, OldProtection);
+            return
+                $"BaseAddress = 0x{BaseAddress.ToInt64():X} NewProtection = {NewProtection} OldProtection = {OldProtection}";
         }
 
-        #endregion
+        #endregion ToString (override)
 
-        #endregion
+        #endregion Methods
     }
 }

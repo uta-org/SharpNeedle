@@ -44,7 +44,7 @@ namespace Binarysharp.MemoryManagement.Windows
             return stringBuilder.ToString();
         }
 
-        #endregion
+        #endregion GetClassName
 
         #region GetForegroundWindow
 
@@ -60,7 +60,7 @@ namespace Binarysharp.MemoryManagement.Windows
             return NativeMethods.GetForegroundWindow();
         }
 
-        #endregion
+        #endregion GetForegroundWindow
 
         #region GetSystemMetrics
 
@@ -80,7 +80,7 @@ namespace Binarysharp.MemoryManagement.Windows
                 "The call of GetSystemMetrics failed. Unfortunately, GetLastError code doesn't provide more information.");
         }
 
-        #endregion
+        #endregion GetSystemMetrics
 
         #region GetWindowText
 
@@ -108,7 +108,7 @@ namespace Binarysharp.MemoryManagement.Windows
             return stringBuilder.ToString();
         }
 
-        #endregion
+        #endregion GetWindowText
 
         #region GetWindowPlacement
 
@@ -136,7 +136,7 @@ namespace Binarysharp.MemoryManagement.Windows
             return placement;
         }
 
-        #endregion
+        #endregion GetWindowPlacement
 
         #region GetWindowProcessId
 
@@ -157,7 +157,7 @@ namespace Binarysharp.MemoryManagement.Windows
             return processId;
         }
 
-        #endregion
+        #endregion GetWindowProcessId
 
         #region GetWindowThreadId
 
@@ -176,7 +176,7 @@ namespace Binarysharp.MemoryManagement.Windows
             return NativeMethods.GetWindowThreadProcessId(windowHandle, out trash);
         }
 
-        #endregion
+        #endregion GetWindowThreadId
 
         #region EnumAllWindows
 
@@ -202,7 +202,7 @@ namespace Binarysharp.MemoryManagement.Windows
             return list;
         }
 
-        #endregion
+        #endregion EnumAllWindows
 
         #region EnumChildWindows
 
@@ -216,7 +216,7 @@ namespace Binarysharp.MemoryManagement.Windows
             // Create the list of windows
             var list = new List<IntPtr>();
             // Create the callback
-            EnumWindowsProc callback = delegate(IntPtr windowHandle, IntPtr lParam)
+            EnumWindowsProc callback = delegate (IntPtr windowHandle, IntPtr lParam)
             {
                 list.Add(windowHandle);
                 return true;
@@ -228,7 +228,7 @@ namespace Binarysharp.MemoryManagement.Windows
             return list.ToArray();
         }
 
-        #endregion
+        #endregion EnumChildWindows
 
         #region EnumTopLevelWindows
 
@@ -242,7 +242,7 @@ namespace Binarysharp.MemoryManagement.Windows
             return EnumChildWindows(IntPtr.Zero);
         }
 
-        #endregion
+        #endregion EnumTopLevelWindows
 
         #region FlashWindow
 
@@ -266,7 +266,7 @@ namespace Binarysharp.MemoryManagement.Windows
             return NativeMethods.FlashWindow(windowHandle, true);
         }
 
-        #endregion
+        #endregion FlashWindow
 
         #region SetForegroundWindow
 
@@ -296,7 +296,7 @@ namespace Binarysharp.MemoryManagement.Windows
                 throw new ApplicationException("Couldn't set the window to foreground.");
         }
 
-        #endregion
+        #endregion SetForegroundWindow
 
         #region SetWindowText
 
@@ -315,7 +315,7 @@ namespace Binarysharp.MemoryManagement.Windows
                 throw new Win32Exception("Couldn't set the text of the window's title bar.");
         }
 
-        #endregion
+        #endregion SetWindowText
 
         #region ShowWindow
 
@@ -337,7 +337,7 @@ namespace Binarysharp.MemoryManagement.Windows
             return NativeMethods.ShowWindow(windowHandle, state);
         }
 
-        #endregion
+        #endregion ShowWindow
 
         #region FlashWindowEx
 
@@ -390,7 +390,7 @@ namespace Binarysharp.MemoryManagement.Windows
             FlashWindowEx(windowHandle, flags, 0);
         }
 
-        #endregion
+        #endregion FlashWindowEx
 
         #region MapVirtualKey
 
@@ -436,10 +436,10 @@ namespace Binarysharp.MemoryManagement.Windows
         /// </returns>
         public static uint MapVirtualKey(Keys key, TranslationTypes translation)
         {
-            return MapVirtualKey((uint) key, translation);
+            return MapVirtualKey((uint)key, translation);
         }
 
-        #endregion
+        #endregion MapVirtualKey
 
         #region PostMessage
 
@@ -461,7 +461,7 @@ namespace Binarysharp.MemoryManagement.Windows
 
             // Post the message
             if (!NativeMethods.PostMessage(windowHandle, message, wParam, lParam))
-                throw new Win32Exception(string.Format("Couldn't post the message '{0}'.", message));
+                throw new Win32Exception($"Couldn't post the message '{message}'.");
         }
 
         /// <summary>
@@ -477,10 +477,10 @@ namespace Binarysharp.MemoryManagement.Windows
         /// <param name="lParam">Additional message-specific information.</param>
         public static void PostMessage(IntPtr windowHandle, WindowsMessages message, UIntPtr wParam, UIntPtr lParam)
         {
-            PostMessage(windowHandle, (uint) message, wParam, lParam);
+            PostMessage(windowHandle, (uint)message, wParam, lParam);
         }
 
-        #endregion
+        #endregion PostMessage
 
         #region SendInput
 
@@ -511,10 +511,10 @@ namespace Binarysharp.MemoryManagement.Windows
         /// <param name="input">A structure represents an event to be inserted into the keyboard or mouse input stream.</param>
         public static void SendInput(Input input)
         {
-            SendInput(new[] {input});
+            SendInput(new[] { input });
         }
 
-        #endregion
+        #endregion SendInput
 
         #region SendMessage
 
@@ -549,10 +549,10 @@ namespace Binarysharp.MemoryManagement.Windows
         /// <returns>The return value specifies the result of the message processing; it depends on the message sent.</returns>
         public static IntPtr SendMessage(IntPtr windowHandle, WindowsMessages message, UIntPtr wParam, IntPtr lParam)
         {
-            return SendMessage(windowHandle, (uint) message, wParam, lParam);
+            return SendMessage(windowHandle, (uint)message, wParam, lParam);
         }
 
-        #endregion
+        #endregion SendMessage
 
         #region SetWindowPlacement
 
@@ -604,6 +604,6 @@ namespace Binarysharp.MemoryManagement.Windows
                 throw new Win32Exception("Couldn't set the window placement.");
         }
 
-        #endregion
+        #endregion SetWindowPlacement
     }
 }

@@ -38,7 +38,7 @@ namespace Binarysharp.MemoryManagement.Assembly.Assembler
         public byte[] Assemble(string asm, IntPtr baseAddress)
         {
             // Rebase the code
-            asm = string.Format("use32\norg 0x{0:X8}\n", baseAddress.ToInt64()) + asm;
+            asm = $"use32\norg 0x{baseAddress.ToInt64():X8}\n" + asm;
             // Assemble and return the code
             return FasmNet.Assemble(asm);
         }

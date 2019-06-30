@@ -36,17 +36,17 @@ namespace Binarysharp.MemoryManagement.Modules
             // Check whether the file exists
             if (!File.Exists(libraryPath))
                 throw new FileNotFoundException(
-                    string.Format("Couldn't load the library {0} because the file doesn't exist.", libraryPath));
+                    $"Couldn't load the library {libraryPath} because the file doesn't exist.");
 
             // Load the library
             if (NativeMethods.LoadLibrary(libraryPath) == IntPtr.Zero)
-                throw new Win32Exception(string.Format("Couldn't load the library {0}.", libraryPath));
+                throw new Win32Exception($"Couldn't load the library {libraryPath}.");
 
             // Enumerate the loaded modules and return the one newly added
             return Process.GetCurrentProcess().Modules.Cast<ProcessModule>().First(m => m.FileName == libraryPath);
         }
 
-        #endregion
+        #endregion LoadLibrary
 
         #region GetProcAddress
 
@@ -64,8 +64,8 @@ namespace Binarysharp.MemoryManagement.Modules
 
             // Check whether there is a module loaded with this name
             if (module == null)
-                throw new ArgumentException(string.Format(
-                    "Couldn't get the module {0} because it doesn't exist in the current process.", moduleName));
+                throw new ArgumentException(
+                    $"Couldn't get the module {moduleName} because it doesn't exist in the current process.");
 
             // Get the function address
             var ret = NativeMethods.GetProcAddress(module.BaseAddress, functionName);
@@ -75,7 +75,7 @@ namespace Binarysharp.MemoryManagement.Modules
                 return ret;
 
             // Else the function was not found, throws an exception
-            throw new Win32Exception(string.Format("Couldn't get the function address of {0}.", functionName));
+            throw new Win32Exception($"Couldn't get the function address of {functionName}.");
         }
 
         /// <summary>
@@ -89,7 +89,7 @@ namespace Binarysharp.MemoryManagement.Modules
             return GetProcAddress(module.ModuleName, functionName);
         }
 
-        #endregion
+        #endregion GetProcAddress
 
         #region FreeLibrary
 
@@ -105,12 +105,12 @@ namespace Binarysharp.MemoryManagement.Modules
 
             // Check whether there is a library loaded with this name
             if (module == null)
-                throw new ArgumentException(string.Format(
-                    "Couldn't free the library {0} because it doesn't exist in the current process.", libraryName));
+                throw new ArgumentException(
+                    $"Couldn't free the library {libraryName} because it doesn't exist in the current process.");
 
             // Free the library
             if (!NativeMethods.FreeLibrary(module.BaseAddress))
-                throw new Win32Exception(string.Format("Couldn't free the library {0}.", libraryName));
+                throw new Win32Exception($"Couldn't free the library {libraryName}.");
         }
 
         /// <summary>
@@ -122,6 +122,6 @@ namespace Binarysharp.MemoryManagement.Modules
             FreeLibrary(module.ModuleName);
         }
 
-        #endregion
+        #endregion FreeLibrary
     }
 }

@@ -15,6 +15,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Binarysharp.MemoryManagement.Internals;
 using Binarysharp.MemoryManagement.Native;
+using ThreadState = System.Diagnostics.ThreadState;
 
 namespace Binarysharp.MemoryManagement.Threading
 {
@@ -40,7 +41,7 @@ namespace Binarysharp.MemoryManagement.Threading
         /// </summary>
         private readonly Task _parameterCleaner;
 
-        #endregion
+        #endregion Fields
 
         #region Properties
 
@@ -80,7 +81,7 @@ namespace Binarysharp.MemoryManagement.Threading
 
                 // The thread is closed, cannot set the context
                 throw new ThreadStateException(
-                    string.Format("Couldn't set the context of the thread #{0} because it is terminated.", Id));
+                    $"Couldn't set the context of the thread #{Id} because it is terminated.");
             }
             set
             {
@@ -106,7 +107,7 @@ namespace Binarysharp.MemoryManagement.Threading
             }
         }
 
-        #endregion
+        #endregion Context
 
         #region Handle
 
@@ -115,7 +116,7 @@ namespace Binarysharp.MemoryManagement.Threading
         /// </summary>
         public SafeMemoryHandle Handle { get; }
 
-        #endregion
+        #endregion Handle
 
         #region Id
 
@@ -124,7 +125,7 @@ namespace Binarysharp.MemoryManagement.Threading
         /// </summary>
         public int Id { get; }
 
-        #endregion
+        #endregion Id
 
         #region IsAlive
 
@@ -133,7 +134,7 @@ namespace Binarysharp.MemoryManagement.Threading
         /// </summary>
         public bool IsAlive => !IsTerminated;
 
-        #endregion
+        #endregion IsAlive
 
         #region IsMainThread
 
@@ -142,7 +143,7 @@ namespace Binarysharp.MemoryManagement.Threading
         /// </summary>
         public bool IsMainThread => this == MemorySharp.Threads.MainThread;
 
-        #endregion
+        #endregion IsMainThread
 
         #region IsSuspended
 
@@ -161,7 +162,7 @@ namespace Binarysharp.MemoryManagement.Threading
             }
         }
 
-        #endregion
+        #endregion IsSuspended
 
         #region IsTerminated
 
@@ -179,7 +180,7 @@ namespace Binarysharp.MemoryManagement.Threading
             }
         }
 
-        #endregion
+        #endregion IsTerminated
 
         #region Native
 
@@ -188,7 +189,7 @@ namespace Binarysharp.MemoryManagement.Threading
         /// </summary>
         public ProcessThread Native { get; private set; }
 
-        #endregion
+        #endregion Native
 
         #region Teb
 
@@ -197,9 +198,9 @@ namespace Binarysharp.MemoryManagement.Threading
         /// </summary>
         public ManagedTeb Teb { get; }
 
-        #endregion
+        #endregion Teb
 
-        #endregion
+        #endregion Properties
 
         #region Constructor/Destructor
 
@@ -248,7 +249,7 @@ namespace Binarysharp.MemoryManagement.Threading
             Dispose();
         }
 
-        #endregion
+        #endregion Constructor/Destructor
 
         #region Methods
 
@@ -265,7 +266,7 @@ namespace Binarysharp.MemoryManagement.Threading
             GC.SuppressFinalize(this);
         }
 
-        #endregion
+        #endregion Dispose (implementation of IDisposable)
 
         #region Equals (override)
 
@@ -276,7 +277,7 @@ namespace Binarysharp.MemoryManagement.Threading
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            return obj.GetType() == GetType() && Equals((RemoteThread) obj);
+            return obj.GetType() == GetType() && Equals((RemoteThread)obj);
         }
 
         /// <summary>
@@ -288,7 +289,7 @@ namespace Binarysharp.MemoryManagement.Threading
             return ReferenceEquals(this, other) || Id == other.Id && MemorySharp.Equals(other.MemorySharp);
         }
 
-        #endregion
+        #endregion Equals (override)
 
         #region GetExitCode
 
@@ -303,7 +304,7 @@ namespace Binarysharp.MemoryManagement.Threading
             return ret.HasValue ? MarshalType<T>.PtrToObject(MemorySharp, ret.Value) : default(T);
         }
 
-        #endregion
+        #endregion GetExitCode
 
         #region GetHashCode (override)
 
@@ -315,7 +316,7 @@ namespace Binarysharp.MemoryManagement.Threading
             return Id.GetHashCode() ^ MemorySharp.GetHashCode();
         }
 
-        #endregion
+        #endregion GetHashCode (override)
 
         #region GetRealSegmentAddress
 
@@ -333,21 +334,27 @@ namespace Binarysharp.MemoryManagement.Threading
                 case SegmentRegisters.Cs:
                     entry = ThreadCore.GetThreadSelectorEntry(Handle, Context.SegCs);
                     break;
+
                 case SegmentRegisters.Ds:
                     entry = ThreadCore.GetThreadSelectorEntry(Handle, Context.SegDs);
                     break;
+
                 case SegmentRegisters.Es:
                     entry = ThreadCore.GetThreadSelectorEntry(Handle, Context.SegEs);
                     break;
+
                 case SegmentRegisters.Fs:
                     entry = ThreadCore.GetThreadSelectorEntry(Handle, Context.SegFs);
                     break;
+
                 case SegmentRegisters.Gs:
                     entry = ThreadCore.GetThreadSelectorEntry(Handle, Context.SegGs);
                     break;
+
                 case SegmentRegisters.Ss:
                     entry = ThreadCore.GetThreadSelectorEntry(Handle, Context.SegSs);
                     break;
+
                 default:
                     throw new InvalidEnumArgumentException("segment");
             }
@@ -356,7 +363,7 @@ namespace Binarysharp.MemoryManagement.Threading
             return new IntPtr(entry.BaseLow | (entry.BaseMid << 16) | (entry.BaseHi << 24));
         }
 
-        #endregion
+        #endregion GetRealSegmentAddress
 
         #region Operator (override)
 
@@ -370,7 +377,7 @@ namespace Binarysharp.MemoryManagement.Threading
             return !Equals(left, right);
         }
 
-        #endregion
+        #endregion Operator (override)
 
         #region Refresh
 
@@ -387,7 +394,7 @@ namespace Binarysharp.MemoryManagement.Threading
             Native = MemorySharp.Threads.NativeThreads.FirstOrDefault(t => t.Id == Native.Id);
         }
 
-        #endregion
+        #endregion Refresh
 
         #region Join
 
@@ -409,7 +416,7 @@ namespace Binarysharp.MemoryManagement.Threading
             return ThreadCore.WaitForSingleObject(Handle, time);
         }
 
-        #endregion
+        #endregion Join
 
         #region Resume
 
@@ -429,7 +436,7 @@ namespace Binarysharp.MemoryManagement.Threading
                 _parameterCleaner.Start();
         }
 
-        #endregion
+        #endregion Resume
 
         #region Suspend
 
@@ -448,7 +455,7 @@ namespace Binarysharp.MemoryManagement.Threading
             return null;
         }
 
-        #endregion
+        #endregion Suspend
 
         #region Terminate
 
@@ -462,7 +469,7 @@ namespace Binarysharp.MemoryManagement.Threading
                 ThreadCore.TerminateThread(Handle, exitCode);
         }
 
-        #endregion
+        #endregion Terminate
 
         #region ToString (override)
 
@@ -471,11 +478,11 @@ namespace Binarysharp.MemoryManagement.Threading
         /// </summary>
         public override string ToString()
         {
-            return string.Format("Id = {0} IsAlive = {1} IsMainThread = {2}", Id, IsAlive, IsMainThread);
+            return $"Id = {Id} IsAlive = {IsAlive} IsMainThread = {IsMainThread}";
         }
 
-        #endregion
+        #endregion ToString (override)
 
-        #endregion
+        #endregion Methods
     }
 }

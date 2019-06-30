@@ -28,7 +28,7 @@ namespace Binarysharp.MemoryManagement.Native
         public int Timeout;
     }
 
-    #endregion
+    #endregion FlashInfo
 
     #region HardwareInput
 
@@ -54,7 +54,7 @@ namespace Binarysharp.MemoryManagement.Native
         public short WParamH;
     }
 
-    #endregion
+    #endregion HardwareInput
 
     #region Input
 
@@ -95,7 +95,7 @@ namespace Binarysharp.MemoryManagement.Native
         [FieldOffset(sizeof(int))] public HardwareInput Hardware;
     }
 
-    #endregion
+    #endregion Input
 
     #region KeyboardInput
 
@@ -135,7 +135,7 @@ namespace Binarysharp.MemoryManagement.Native
         public IntPtr ExtraInfo;
     }
 
-    #endregion
+    #endregion KeyboardInput
 
     #region LdtEntry
 
@@ -178,7 +178,7 @@ namespace Binarysharp.MemoryManagement.Native
         public byte BaseHi;
     }
 
-    #endregion
+    #endregion LdtEntry
 
     #region MemoryBasicInformation
 
@@ -228,7 +228,7 @@ namespace Binarysharp.MemoryManagement.Native
         public MemoryTypeFlags Type;
     }
 
-    #endregion
+    #endregion MemoryBasicInformation
 
     #region MouseInput
 
@@ -301,7 +301,7 @@ namespace Binarysharp.MemoryManagement.Native
         public IntPtr ExtraInfo;
     }
 
-    #endregion
+    #endregion MouseInput
 
     #region Point
 
@@ -326,11 +326,11 @@ namespace Binarysharp.MemoryManagement.Native
         /// </summary>
         public override string ToString()
         {
-            return string.Format("X = {0} Y = {1}", X, Y);
+            return $"X = {X} Y = {Y}";
         }
     }
 
-    #endregion
+    #endregion Point
 
     #region ProcessBasicInformation
 
@@ -375,7 +375,7 @@ namespace Binarysharp.MemoryManagement.Native
         public int Size => MarshalType<ProcessBasicInformation>.Size;
     }
 
-    #endregion
+    #endregion ProcessBasicInformation
 
     #region ThreadBasicInformation
 
@@ -421,7 +421,7 @@ namespace Binarysharp.MemoryManagement.Native
         public uint BasePriority;
     }
 
-    #endregion
+    #endregion ThreadBasicInformation
 
     #region ThreadContext
 
@@ -591,7 +591,7 @@ namespace Binarysharp.MemoryManagement.Native
         public byte[] ExtendedRegisters;
     }
 
-    #endregion
+    #endregion ThreadContext
 
     #region FloatingSaveArea
 
@@ -615,7 +615,7 @@ namespace Binarysharp.MemoryManagement.Native
         public uint Cr0NpxState;
     }
 
-    #endregion
+    #endregion FloatingSaveArea
 
     #region Rectangle
 
@@ -669,11 +669,11 @@ namespace Binarysharp.MemoryManagement.Native
         /// </summary>
         public override string ToString()
         {
-            return string.Format("Left = {0} Top = {1} Height = {2} Width = {3}", Left, Top, Height, Width);
+            return $"Left = {Left} Top = {Top} Height = {Height} Width = {Width}";
         }
     }
 
-    #endregion
+    #endregion Rectangle
 
     #region WindowPlacement
 
@@ -715,5 +715,5 @@ namespace Binarysharp.MemoryManagement.Native
         public Rectangle NormalPosition;
     }
 
-    #endregion
+    #endregion WindowPlacement
 }
